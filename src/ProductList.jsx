@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "./CartSlice";
 function ProductList() {
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
   const [addedToCart, setAddedToCart] = useState({});
-
+  const cart = useSelector((state) => state.cart.items);
   const plantsArray = [
     {
       category: "Air Purifying Plants",
@@ -270,7 +270,7 @@ function ProductList() {
     fontSize: "30px",
     textDecoration: "none",
   };
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const handleCartClick = (e) => {
     e.preventDefault();
     setShowCart(true); // Set showCart to true when cart icon is clicked
@@ -287,12 +287,11 @@ function ProductList() {
   };
 
   const handleAddToCart = (e) => {
-    e.preventDefault()
-    dispatch(addItem(e))
+    dispatch(addItem(e));
     setAddedToCart((prevState) => ({
-        ...prevState,
-        [product.name]: true
-    }))
+      ...prevState,
+      [e.name]: true,
+    }));
   };
   return (
     <div>
@@ -358,12 +357,17 @@ function ProductList() {
                     <img src={val.image} alt="" className="product-image" />
                     <h3 className="product-title">{val.name}</h3>
                     <p className="product-price">{val.cost}</p>
-                    <button
-                      className="product-button"
-                      onClick={() => handleAddToCart(val)}
-                    >
-                      Add to cart
-                    </button>
+                    <p className="product-description">{val.description}</p>
+                    {cart.find((item) => item.name === val.name) ? (
+                      <input disabled type="submit" value={"Added to cart"} className="product-button" style={{backgroundColor:"gray"}}/>
+                    ) : (
+                      <button
+                        className="product-button"
+                        onClick={() => handleAddToCart(val)}
+                      >
+                        Add to cart
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
